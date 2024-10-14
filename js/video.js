@@ -5,21 +5,25 @@ function TimeCalculation(data){
     const hours = parseInt(minutes/60)
     const remainingMinute= parseInt(minutes%60)
     if(hours == 0 && minutes != 0){
-        return(`${remainingMinute} minutes ${second} seconds`)
+        return(`${remainingMinute} minutes ${second} seconds ago`)
     }
     else if(hours != 0 && minutes == 0){
-        return(`${hours} hours ${remainingMinute} minutes ${second} seconds`)
+        return(`${hours} hours ${remainingMinute} minutes ${second} seconds ago`)
     }
     else if(hours == 0 && minutes == 0){
         return(`${second} seconds`)
     }
     else{
-        return(`${hours} hours ${remainingMinute} minutes ${second} seconds`)
+        return(`${hours} hours ${remainingMinute} minutes ${second} seconds ago`)
     }
    
 }
 // Fetch, load and show categories button on html
 
+// {
+//     "category_id": "1001",
+//      "category": "Music"
+// }
 const loadCategories = () => {
     fetch("https://openapi.programming-hero.com/api/phero-tube/categories")
         .then(res => res.json())
@@ -27,24 +31,28 @@ const loadCategories = () => {
         .catch(error => console.log(error))
 }
 
-// {
-//     "category_id": "1001",
-//      "category": "Music"
-// }
 const displayCategories = (categories) => {
     const categoryContainer = document.getElementById("category");
 
     categories.forEach((items) => {
         //    create button
-        const button = document.createElement("button")
+        const buttonContainer = document.createElement("div")
         // jodi button.classList.add use kori then ("mx-auto","p-2" amne use hobe)
-        button.classList = "btn";
-        button.innerText = items.category;
+        buttonContainer.innerHTML = `
+        <button class="btn" onclick="loadCategoriesVideo(${items.category_id})">${items.category}</button>`;
 
         // add button to category container
-        categoryContainer.append(button);
+        categoryContainer.append(buttonContainer);
     });
 }
+
+const loadCategoriesVideo = (id) =>{
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+        .then(res => res.json())
+        .then(data => displayVideos(data.category))
+        .catch(error => console.log(error))
+}
+
 loadCategories();
 
 // Fetch, load and show videos on html
@@ -57,6 +65,21 @@ const loadVideos = () => {
 
 const displayVideos = (videos) => {
     const videoContainer = document.getElementById("videos");
+    videoContainer.innerHTML=""
+    if(videos.length==0){
+        videoContainer.classList.remove("grid")
+        videoContainer.innerHTML =`
+        <div class="w-1/3 mx-auto flex flex-col justify-center items-center gap-5">
+          <div><img class="" src="Assets/Icon.png" alt="" /></div>
+          <div class="w-3/4">
+             <h2 class="text-3xl font-bold text-center">Oops !! Sorry, There is no content here</h2>
+          </div>
+        </div>`
+        
+    }
+    else{
+        videoContainer.classList.add("grid")
+    }
     videos.forEach((videos) => {
         //    create button
         const card = document.createElement("div")
